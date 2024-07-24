@@ -12,3 +12,22 @@ When you forgot to end a session, you can provide an end date with
 
 You can view your time logged for the day with `clocky today` and 
 the time logged for the week with `clocky week`.
+
+## Building
+The utility can be built and set up with
+```
+cargo build --release
+sqlite3 clocky.db < migrations/2024XXXX_create_sessions_table.sql
+
+mv target/release/clocky ~/bin/
+mv path/to/clocky.db ~/bin/
+
+// Where ~/bin is a directory on your PATH
+// I also set up aliases in my shell for easier use
+e.g
+> cls (clocky start)
+> cle (clocky end)
+> cld (clocky today)
+> clw (clocky week)
+
+```
