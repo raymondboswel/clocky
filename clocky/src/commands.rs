@@ -1,7 +1,7 @@
 use crate::{session, utils};
 
-pub fn start_session() {
-    match session::start() {
+pub fn start_session(datetime: Option<&str>) {
+    match session::start(datetime) {
         Ok(_) => println!("Session started."),
         Err(e) => eprintln!("Error starting session: {}", e),
     }

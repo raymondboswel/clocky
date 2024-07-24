@@ -17,7 +17,10 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Start,
+    Start {
+        #[arg(short, long)]
+        datetime: Option<String>,
+    },
     End {
         #[arg(short, long)]
         datetime: Option<String>,
@@ -25,12 +28,11 @@ enum Commands {
     Today,
     Week,
 }
-
 fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Start => commands::start_session(),
+        Commands::Start { datetime } => commands::start_session(datetime.as_deref()),
         Commands::End { datetime } => commands::end_session(datetime.as_deref()),
         Commands::Today => commands::show_today(),
         Commands::Week => commands::show_week(),
