@@ -1,8 +1,19 @@
-use chrono::{DateTime, Duration, Local, NaiveDate, NaiveDateTime};
+use std::{env, path::PathBuf};
+
+use chrono::{DateTime, Duration, Local, NaiveDateTime};
 use rusqlite::{Connection, Result};
 
-pub fn establish_connection() -> Result<Connection> {
-    Connection::open("clocky.db")
+fn get_db_path() -> Result<PathBuf, String> {
+    let exe_path = env::current_exe().map_err(|e| e.to_string())?;
+    let exe_dir = exe_path
+        .parent()
+        .ok_or("Failed to get executable directory")?;
+    Ok(exe_dir.join("clocky.db"))
+}
+
+pub fn establish_connection() -> Result<Connection, String> {
+    let db_path = get_db_path()?;
+    Connection::open(db_path).map_err(|e| e.to_string())
 }
 
 pub fn create_session(conn: &Connection, start_time: DateTime<Local>) -> Result<()> {
