@@ -1,5 +1,5 @@
 use crate::db;
-use chrono::{DateTime, Datelike, Duration, Local, NaiveDate};
+use chrono::{DateTime, Datelike, Duration, Local};
 
 pub fn start() -> Result<(), String> {
     let conn = db::establish_connection().map_err(|e| e.to_string())?;
@@ -29,13 +29,13 @@ pub fn end(datetime: Option<&str>) -> Result<(), String> {
 
 pub fn time_worked_today() -> Result<Duration, String> {
     let conn = db::establish_connection().map_err(|e| e.to_string())?;
-    let today = Local::today().naive_local();
+    let today = Local::now().naive_local();
     db::get_time_worked_since(&conn, today)
 }
 
 pub fn time_worked_week() -> Result<Duration, String> {
     let conn = db::establish_connection().map_err(|e| e.to_string())?;
-    let today = Local::today().naive_local();
+    let today = Local::now().naive_local();
     let weekday = today.weekday().num_days_from_monday();
     let start_of_week = today - chrono::Duration::days(weekday as i64);
     db::get_time_worked_since(&conn, start_of_week)

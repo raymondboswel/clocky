@@ -1,4 +1,4 @@
-use crate::session;
+use crate::{session, utils};
 
 pub fn start_session() {
     match session::start() {

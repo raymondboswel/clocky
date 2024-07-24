@@ -3,38 +3,36 @@ mod db;
 mod session;
 mod utils;
 
-use clap::{App, Arg, SubCommand};
+use clap::{command, Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(name = "Clocky")]
+#[command(version = "0.1.0")]
+#[command(author = "Your Name <your.email@example.com>")]
+#[command(about = "Tracks time worked")]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    Start,
+    End {
+        #[arg(short, long)]
+        datetime: Option<String>,
+    },
+    Today,
+    Week,
+}
 
 fn main() {
-    let matches = App::new("Clocky")
-        .version("0.1.0")
-        .author("Your Name <your.email@example.com>")
-        .about("Tracks time worked")
-        .subcommand(SubCommand::with_name("start").about("Starts a work session"))
-        .subcommand(
-            SubCommand::with_name("end")
-                .about("Ends a work session")
-                .arg(
-                    Arg::with_name("datetime")
-                        .help("The end time of the session")
-                        .required(false),
-                ),
-        )
-        .subcommand(SubCommand::with_name("today").about("Shows the time worked today"))
-        .subcommand(SubCommand::with_name("week").about("Shows the time worked this week"))
-        .get_matches();
+    let cli = Cli::parse();
 
-    if let Some(_) = matches.subcommand_matches("start") {
-        commands::start_session();
-    } else if let Some(matches) = matches.subcommand_matches("end") {
-        if let Some(datetime) = matches.value_of("datetime") {
-            commands::end_session(Some(datetime));
-        } else {
-            commands::end_session(None);
-        }
-    } else if let Some(_) = matches.subcommand_matches("today") {
-        commands::show_today();
-    } else if let Some(_) = matches.subcommand_matches("week") {
-        commands::show_week();
+    match &cli.command {
+        Commands::Start => commands::start_session(),
+        Commands::End { datetime } => commands::end_session(datetime.as_deref()),
+        Commands::Today => commands::show_today(),
+        Commands::Week => commands::show_week(),
     }
 }

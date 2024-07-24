@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, Local, NaiveDate};
+use chrono::{DateTime, Duration, Local, NaiveDate, NaiveDateTime};
 use rusqlite::{Connection, Result};
 
 pub fn establish_connection() -> Result<Connection> {
@@ -27,7 +27,7 @@ pub fn count_unfinished_sessions(conn: &Connection) -> Result<usize> {
     Ok(count)
 }
 
-pub fn get_time_worked_since(conn: &Connection, since: NaiveDate) -> Result<Duration, String> {
+pub fn get_time_worked_since(conn: &Connection, since: NaiveDateTime) -> Result<Duration, String> {
     let mut stmt = conn
         .prepare("SELECT start_time, end_time FROM sessions WHERE start_time >= ?1")
         .map_err(|e| e.to_string())?;
