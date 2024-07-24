@@ -1,7 +1,7 @@
 use crate::db;
 use chrono::{DateTime, Datelike, Duration, Local};
 
-pub fn start() -> Result<(), String> {
+pub fn start(datetime: Option<&str>) -> Result<(), String> {
     let conn = db::establish_connection().map_err(|e| e.to_string())?;
     let unfinished_sessions = db::count_unfinished_sessions(&conn).map_err(|e| e.to_string())?;
     if unfinished_sessions > 0 {
@@ -10,7 +10,14 @@ pub fn start() -> Result<(), String> {
         );
     }
 
-    db::create_session(&conn, Local::now()).map_err(|e| e.to_string())?;
+    let start_time = match datetime {
+        Some(dt) => DateTime::parse_from_rfc3339(dt)
+            .map_err(|_| "Invalid datetime format".to_string())?
+            .with_timezone(&Local),
+        None => Local::now(),
+    };
+
+    db::create_session(&conn, start_time).map_err(|e| e.to_string())?;
     Ok(())
 }
 
